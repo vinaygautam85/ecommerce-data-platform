@@ -1,0 +1,16 @@
+CREATE OR REPLACE TABLE SILVER.ORDERS AS
+SELECT
+    ORDER_ID::NUMBER                             AS ORDER_ID,
+    CUSTOMER_ID::NUMBER                          AS CUSTOMER_ID,
+    ORDER_DATE::TIMESTAMP_NTZ                    AS ORDER_DATE,
+    UPPER(TRIM(STATUS))                          AS STATUS,
+    TOTAL_AMOUNT::NUMBER(12,2)                   AS TOTAL_AMOUNT,
+    UPPER(TRIM(PAYMENT_METHOD))                  AS PAYMENT_METHOD,
+    COUPON_ID::NUMBER                            AS COUPON_ID,
+    CAMPAIGN_ID::NUMBER                          AS CAMPAIGN_ID,
+    _LOADED_AT, _INGESTION_ID, _SOURCE_SYSTEM,
+    CURRENT_TIMESTAMP()                          AS _PROCESSED_AT,
+    {{ SILVER_RUN_ID }}                          AS _SILVER_RUN_ID
+FROM BRONZE.ORDERS
+WHERE TOTAL_AMOUNT >= 0
+QUALIFY ROW_NUMBER() OVER (PARTITION BY ORDER_ID ORDER BY _LOADED_AT DESC) = 1;

@@ -1,0 +1,32 @@
+CREATE OR REPLACE TABLE GOLD.FACT_SALES AS
+SELECT
+    oi.ORDER_ITEM_ID,
+    o.ORDER_ID,
+    COALESCE(dd.DATE_KEY, -1)       AS DATE_KEY,
+    COALESCE(dc.CUSTOMER_KEY, -1)   AS CUSTOMER_KEY,
+    COALESCE(dp.PRODUCT_KEY, -1)    AS PRODUCT_KEY,
+    COALESCE(dcam.CAMPAIGN_KEY, -1) AS CAMPAIGN_KEY,
+    COALESCE(dcoup.COUPON_KEY, -1)  AS COUPON_KEY,
+    oi.QUANTITY,
+    oi.UNIT_PRICE,
+    (oi.QUANTITY * oi.UNIT_PRICE)::NUMBER(12,2)                            AS GROSS_REVENUE,
+    oi.DISCOUNT                                                            AS DISCOUNT_AMT,
+    oi.TAX                                                                 AS TAX_AMT,
+    (oi.QUANTITY * oi.UNIT_PRICE - oi.DISCOUNT)::NUMBER(12,2)              AS NET_REVENUE,
+    (oi.QUANTITY * COALESCE(dp.COST, 0))::NUMBER(12,2)                     AS COST_AMT,
+    (oi.QUANTITY * oi.UNIT_PRICE - oi.DISCOUNT
+       - oi.QUANTITY * COALESCE(dp.COST, 0))::NUMBER(12,2)                 AS GROSS_MARGIN,
+    o.ORDER_DATE,
+    CURRENT_TIMESTAMP()  AS _FACT_LOADED_AT,
+    {{ FACT_RUN_ID }}    AS _FACT_RUN_ID
+FROM SILVER.ORDER_ITEMS oi
+JOIN SILVER.ORDERS o          ON oi.ORDER_ID = o.ORDER_ID
+LEFT JOIN GOLD.DIM_DATE dd    ON TO_NUMBER(TO_CHAR(o.ORDER_DATE, 'YYYYMMDD')) = dd.DATE_KEY
+LEFT JOIN GOLD.DIM_CUSTOMER dc ON o.CUSTOMER_ID = dc.CUSTOMER_ID
+                              AND o.ORDER_DATE >= dc.VALID_FROM
+                              AND o.ORDER_DATE <  COALESCE(dc.VALID_TO, '9999-12-31'::TIMESTAMP_NTZ)
+LEFT JOIN GOLD.DIM_PRODUCT dp  ON oi.PRODUCT_ID = dp.PRODUCT_ID
+                              AND o.ORDER_DATE >= dp.VALID_FROM
+                              AND o.ORDER_DATE <  COALESCE(dp.VALID_TO, '9999-12-31'::TIMESTAMP_NTZ)
+LEFT JOIN GOLD.DIM_CAMPAIGN dcam ON o.CAMPAIGN_ID = dcam.CAMPAIGN_ID
+LEFT JOIN GOLD.DIM_COUPON dcoup  ON o.COUPON_ID = dcoup.COUPON_ID;

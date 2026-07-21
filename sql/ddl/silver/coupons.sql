@@ -1,0 +1,14 @@
+CREATE OR REPLACE TABLE SILVER.COUPONS AS
+SELECT
+    COUPON_ID::NUMBER                            AS COUPON_ID,
+    UPPER(TRIM(CODE))                            AS CODE,
+    UPPER(TRIM(DISCOUNT_TYPE))                   AS DISCOUNT_TYPE,
+    DISCOUNT_VALUE::NUMBER(10,2)                 AS DISCOUNT_VALUE,
+    START_DATE::DATE                             AS START_DATE,
+    END_DATE::DATE                               AS END_DATE,
+    _LOADED_AT, _INGESTION_ID, _SOURCE_SYSTEM,
+    CURRENT_TIMESTAMP()                          AS _PROCESSED_AT,
+    {{ SILVER_RUN_ID }}                          AS _SILVER_RUN_ID
+FROM BRONZE.COUPONS
+WHERE DISCOUNT_VALUE > 0
+QUALIFY ROW_NUMBER() OVER (PARTITION BY COUPON_ID ORDER BY _LOADED_AT DESC) = 1;

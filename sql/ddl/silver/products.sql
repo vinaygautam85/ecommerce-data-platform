@@ -1,0 +1,16 @@
+CREATE OR REPLACE TABLE SILVER.PRODUCTS AS
+SELECT
+    PRODUCT_ID::NUMBER                           AS PRODUCT_ID,
+    TRIM(PRODUCT_NAME)                           AS PRODUCT_NAME,
+    CATEGORY_ID::NUMBER                          AS CATEGORY_ID,
+    INITCAP(TRIM(BRAND))                         AS BRAND,
+    UNIT_PRICE::NUMBER(10,2)                     AS UNIT_PRICE,
+    COST::NUMBER(10,2)                           AS COST,
+    (UNIT_PRICE - COST)::NUMBER(10,2)            AS UNIT_MARGIN,
+    SUPPLIER_ID::NUMBER                          AS SUPPLIER_ID,
+    _LOADED_AT, _INGESTION_ID, _SOURCE_SYSTEM,
+    CURRENT_TIMESTAMP()                          AS _PROCESSED_AT,
+    {{ SILVER_RUN_ID }}                          AS _SILVER_RUN_ID
+FROM BRONZE.PRODUCTS
+WHERE UNIT_PRICE > 0 AND COST >= 0
+QUALIFY ROW_NUMBER() OVER (PARTITION BY PRODUCT_ID ORDER BY _LOADED_AT DESC) = 1;

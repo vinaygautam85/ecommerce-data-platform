@@ -1,0 +1,69 @@
+# ═══════════════════════════════════════════════════════════
+# SECRETS — MUST NEVER BE COMMITTED
+# ═══════════════════════════════════════════════════════════
+.env
+.env.local
+.env.*.local
+docker/airflow/.env
+**/.env
+!.env.example
+
+# ═══════════════════════════════════════════════════════════
+# Python
+# ═══════════════════════════════════════════════════════════
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ═══════════════════════════════════════════════════════════
+# Airflow runtime
+# ═══════════════════════════════════════════════════════════
+docker/airflow/logs/
+docker/airflow/plugins/__pycache__/
+airflow/logs/
+airflow.cfg
+airflow.db
+webserver_config.py
+standalone_admin_password.txt
+
+# ═══════════════════════════════════════════════════════════
+# Power BI (binary; embeds data + connection strings)
+# ═══════════════════════════════════════════════════════════
+*.pbix
+*.pbip/.pbi/
+*.pbit
+
+# ═══════════════════════════════════════════════════════════
+# OS / IDE / WSL metadata
+# ═══════════════════════════════════════════════════════════
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ═══════════════════════════════════════════════════════════
+# Local scratch / personal notes
+# ═══════════════════════════════════════════════════════════
+session_log.txt
+scratch/
+sql/scratch/
+tmp/
+*.log
+
+# ═══════════════════════════════════════════════════════════
+# Random accidental files
+# ═══════════════════════════════════════════════════════════
+-1
