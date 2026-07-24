@@ -4,7 +4,7 @@ An end-to-end analytics engineering project: a production-style pipeline that in
 
 ## Dashboard
 
-![Executive Dashboard](powerbi/screenshots/01_executive_overview.png)
+![Executive Dashboard](powerbi/screenshots/01_Executive_Overview.png)
 
 See `powerbi/screenshots/` for all four pages: Executive Overview, Customer Analytics, Operations, and Marketing & Web.
 
