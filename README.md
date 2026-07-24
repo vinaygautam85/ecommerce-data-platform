@@ -2,6 +2,12 @@
 
 An end-to-end analytics engineering project: a production-style pipeline that ingests an ecommerce OLTP database, transforms it through a medallion architecture into a Kimball dimensional model with SCD Type 2 history, orchestrates the flow with Airflow, and surfaces insights in a Power BI dashboard.
 
+## Dashboard
+
+![Executive Dashboard](powerbi/screenshots/01_executive_overview.png)
+
+See `powerbi/screenshots/` for all four pages: Executive Overview, Customer Analytics, Operations, and Marketing & Web.
+
 ## Architecture
 
 ```mermaid
